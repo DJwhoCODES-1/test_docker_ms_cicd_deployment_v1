@@ -20,7 +20,7 @@ jobs:
           key: ${{ secrets.AWS_KEY }}
           script: |
             set -e  # exit on first error
-            cd /home/ubuntu/test_docker_ms_deployment
+            cd /home/ubuntu/test_docker_ms_deployment_new
 
             echo "Pulling latest code..."
             git reset --hard
