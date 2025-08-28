@@ -44,7 +44,7 @@ jobs:
             echo "Starting / restarting apps with PM2..."
             for service in "${SERVICES[@]}"; do
               APP_NAME=$service
-              APP_PATH="$BASE_DIR/$service/app.js"
+              APP_PATH="$BASE_DIR/$service/src/app.js"
 
               if pm2 list | grep -q "$APP_NAME"; then
                 pm2 restart "$APP_NAME"
