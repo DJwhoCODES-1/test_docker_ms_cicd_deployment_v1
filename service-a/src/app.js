@@ -13,6 +13,7 @@ app.get("/", (req, res, next) => {
   res.status(200).json({ msg: "service-a" });
 });
 console.log(process.env.SERVICE_A_PORT);
-app.listen(process.env.SERVICE_A_PORT, () => {
+
+app.listen(process.env.SERVICE_A_PORT, "0.0.0.0", () => {
   console.log("Server A started!");
 });
