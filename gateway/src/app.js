@@ -4,8 +4,6 @@ const setupProxies = require("./proxy");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-setupProxies(app);
-
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   console.log("Headers:", req.headers);
@@ -13,10 +11,16 @@ app.use((req, res, next) => {
   next(); // pass control to the next middleware
 });
 
-app.use((req, res) => {
-  res.status(404).json({ message: "Route not found in gateway" });
+app.get("/health", (req, res) => {
+  res.send("okay");
 });
 
-app.listen(PORT, () => {
+setupProxies(app);
+
+// app.use((req, res) => {
+//   res.status(404).json({ message: "Route not found in gateway" });
+// });
+
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 API Gateway running on port ${PORT}`);
 });
