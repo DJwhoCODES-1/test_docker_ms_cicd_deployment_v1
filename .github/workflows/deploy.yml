@@ -1,0 +1,41 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: SSH into AWS and deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_KEY }}
+          script: |
+            set -e  # exit on first error
+            cd /home/ubuntu/test_cicd
+
+            echo "Pulling latest code..."
+            git reset --hard
+            git clean -fd
+            git pull origin main
+
+            echo "Installing dependencies..."
+            npm ci --production
+
+            echo "Starting / restarting app with PM2..."
+            if pm2 list | grep -q 'app'; then
+              pm2 restart app
+            else
+              pm2 start app.js --name app
+            fi
+
+            pm2 save
+            echo "Deployment completed successfully!"
