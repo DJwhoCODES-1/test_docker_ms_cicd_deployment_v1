@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ service: "B", message: "Hello from Service B!" });
+  res.json({ service: "B", message: "Hello from Service B And Setup Nginx!" });
 });
 
 const port = process.env.SERVICE_B_PORT || 4002;
