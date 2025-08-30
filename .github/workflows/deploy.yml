@@ -1,0 +1,32 @@
+name: CI/CD Docker Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Copy files to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_IP }} "mkdir -p ~/deploy_ms"
+          scp -o StrictHostKeyChecking=no -r ./* ubuntu@${{ secrets.EC2_IP }}:~/deploy_ms/
+
+      - name: Build & run Docker containers on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_IP }} "
+            cd ~/deploy_ms &&
+            docker-compose -f docker-compose.yml pull &&
+            docker-compose -f docker-compose.yml up -d --build
+          "
