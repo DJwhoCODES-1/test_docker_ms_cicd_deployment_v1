@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ service: "A", message: "Hello from Service A!" });
+  res.json({ service: "A", message: "Hello from CICD Deployed Service A!" });
 });
 
 const port = process.env.SERVICE_A_PORT || 4001;
