@@ -1,84 +1,38 @@
-services:
-  nginx:
-    image: nginx:stable-alpine
-    container_name: nginx
-    restart: always
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - gateway
-    networks:
-      - app-network
+version: "3.8"
 
-  gateway:
-    build: ./gateway
-    container_name: api-gateway
-    env_file:
-      - .env
+services:
+  api-gateway:
+    build: ./api_gateway
     ports:
-      - "3000:3000"
+      - "8000:8000"
+    environment:
+      API_GATEWAY_PORT: 8000
+      SERVICE_A_URL: http://service-a:4001
+      SERVICE_B_URL: http://service-b:4002
+      SERVICE_C_URL: http://service-c:4003
+      SERVICE_D_URL: http://service-d:4004
     depends_on:
       - service-a
       - service-b
       - service-c
       - service-d
-      - service-e
-    restart: unless-stopped
-    networks:
-      - app-network
 
   service-a:
-    build: ./service-a
-    container_name: service-a
-    env_file:
-      - .env
-    ports: ["4001:4001"]
-    restart: unless-stopped
-    networks:
-      - app-network
+    build: ./service_a
+    environment:
+      PORT: 4001
 
   service-b:
-    build: ./service-b
-    container_name: service-b
-    env_file:
-      - .env
-    ports: ["4002:4002"]
-    restart: unless-stopped
-    networks:
-      - app-network
+    build: ./service_b
+    environment:
+      PORT: 4002
 
   service-c:
-    build: ./service-c
-    container_name: service-c
-    env_file:
-      - .env
-    ports: ["4003:4003"]
-    restart: unless-stopped
-    networks:
-      - app-network
+    build: ./service_c
+    environment:
+      PORT: 4003
 
   service-d:
-    build: ./service-d
-    container_name: service-d
-    env_file:
-      - .env
-    ports: ["4004:4004"]
-    restart: unless-stopped
-    networks:
-      - app-network
-
-  service-e:
-    build: ./service-e
-    container_name: service-e
-    env_file:
-      - .env
-    ports: ["4005:4005"]
-    restart: unless-stopped
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+    build: ./service_d
+    environment:
+      PORT: 4004
