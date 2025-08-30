@@ -1,4 +1,4 @@
-name: CI/CD Docker Microservices
+name: Deploy to AWS
 
 on:
   push:
@@ -10,19 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.7.2
+      - name: SSH into AWS and deploy
+        uses: appleboy/ssh-action@v0.1.10
         with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-
-      - name: Copy files to EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@YOUR_EC2_IP "mkdir -p ~/test_docker_ms_cicd_deployment_v1"
-          rsync -avz --exclude '.git' ./ ubuntu@YOUR_EC2_IP:~/test_docker_ms_cicd_deployment_v1/
-
-      - name: Deploy Docker Compose on EC2
-        run: |
-          ssh ubuntu@YOUR_EC2_IP "cd ~/test_docker_ms_cicd_deployment_v1 && docker-compose -f deploy/docker-compose.prod.yml up --build -d"
+          host: ${{ secrets.AWS_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_KEY }}
+          script: |
+            cd /home/ubuntu/test_cicd
+            git pull origin main
+            npm install --production
+            pm2 restart app.js || pm2 start app.js
